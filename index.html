@@ -1,0 +1,457 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LearnPro | Web Development Academy</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#f4f6fc;color:#17264b}
+header{background:#101d40;color:white;padding:20px 6%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px}
+header h2{color:#91adff}
+nav{display:flex;gap:15px;flex-wrap:wrap}
+nav button{background:transparent;color:white;padding:8px;border:0;cursor:pointer}
+.hero{padding:100px 20px;text-align:center;background:linear-gradient(120deg,#14244b,#5573e8);color:white}
+.hero h1{font-size:clamp(32px,5vw,52px);margin:20px}
+.hero p{margin-bottom:25px;line-height:1.6}
+.btn,button{background:#4568e8;color:white;padding:13px 22px;border:0;border-radius:8px;cursor:pointer;margin:5px}
+.btn{display:inline-block;text-decoration:none}
+button:hover,.btn:hover{background:#2948ba}
+.container{max-width:1100px;margin:40px auto;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-top:20px}
+.card{background:white;padding:25px;border-radius:13px;box-shadow:0 5px 20px #0000000c;margin:15px 0}
+.card p{line-height:1.6;margin-top:10px}
+input{width:100%;padding:13px;margin:10px 0;border:1px solid #ddd;border-radius:7px}
+.auth{max-width:430px;margin:55px auto;background:white;padding:30px;border-radius:14px}
+.progress{height:13px;background:#e5e9f2;border-radius:20px;overflow:hidden;margin:15px 0}
+.progress div{height:100%;background:#4568e8}
+.hidden{display:none!important}
+.course{text-align:center;padding:65px 20px;background:white}
+footer{background:#101d40;color:white;text-align:center;padding:35px}
+.badge{color:#16834b;font-weight:bold}
+.certificate{border:8px double #b58b32;padding:35px;text-align:center}
+.option{display:block;padding:8px}
+h1,h2,h3{margin-bottom:12px}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>LearnPro.</h2>
+<nav>
+<button onclick="show('home')">Home</button>
+<button onclick="show('register')">Register</button>
+<button onclick="show('login')">Login</button>
+<button onclick="show('dashboard')">Dashboard</button>
+<button onclick="show('admin')">Admin</button>
+</nav>
+</header>
+
+<!-- HOME -->
+<section id="home">
+<div class="hero">
+<p>LEARN TODAY, LEAD TOMORROW.</p>
+<h1>Become a Professional Web Developer</h1>
+<p>Learn HTML, CSS and JavaScript through practical lessons.</p>
+<button onclick="show('register')">Start Learning</button>
+</div>
+
+<div class="container">
+<h2>Why Choose LearnPro?</h2>
+<div class="grid">
+<div class="card"><h3>Practical Learning</h3><p>Learn website development step by step.</p></div>
+<div class="card"><h3>Progress Tracking</h3><p>Track your completed lessons.</p></div>
+<div class="card"><h3>PDF Certificate</h3><p>Generate a certificate after completing the course and passing the exam.</p></div>
+</div>
+</div>
+
+<div class="course">
+<h2>Web Development Masterclass</h2>
+<p>HTML + CSS + JavaScript</p>
+<h1>₹999</h1>
+<button onclick="show('register')">Enroll Now</button>
+</div>
+</section>
+
+<!-- REGISTER -->
+<section id="register" class="hidden">
+<div class="auth">
+<h2>Create Student Account</h2>
+<form onsubmit="register(event)">
+<input id="regName" placeholder="Full Name" required>
+<input id="regEmail" type="email" placeholder="Email Address" required>
+<input id="regPass" type="password" placeholder="Password (minimum 8 characters)" required minlength="8">
+<button type="submit">Register</button>
+</form>
+<p id="regMessage"></p>
+</div>
+</section>
+
+<!-- LOGIN -->
+<section id="login" class="hidden">
+<div class="auth">
+<h2>Student Login</h2>
+<form onsubmit="login(event)">
+<input id="loginEmail" type="email" placeholder="Email" required>
+<input id="loginPass" type="password" placeholder="Password" required>
+<button type="submit">Login</button>
+</form>
+<p id="loginMessage"></p>
+</div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="hidden container">
+<h1>Student Dashboard</h1>
+<h2 id="welcome"></h2>
+
+<div class="card">
+<h2>Web Development Masterclass</h2>
+<h3>Course Fee: ₹999</h3>
+<p id="paymentStatus">Course not purchased.</p>
+<button id="payBtn" onclick="demoPayment()">Demo Purchase</button>
+<div class="progress"><div id="progressBar" style="width:0%"></div></div>
+<p id="progressText">0% Completed</p>
+<button onclick="show('lessons')">Open Course</button>
+<button onclick="show('exam')">Final Examination</button>
+<button onclick="show('certificate')">Certificate</button>
+<button onclick="logout()">Logout</button>
+</div>
+</section>
+
+<!-- LESSONS -->
+<section id="lessons" class="hidden container">
+<h1>Web Development Course</h1>
+<div id="lessonList"></div>
+<button onclick="show('dashboard')">Back to Dashboard</button>
+<button onclick="show('exam')">Final Examination</button>
+</section>
+
+<!-- EXAM -->
+<section id="exam" class="hidden container">
+<h1>Final Examination</h1>
+<p>Pass percentage: 70%</p>
+<form id="examForm" onsubmit="submitExam(event)"></form>
+<p id="examResult"></p>
+</section>
+
+<!-- CERTIFICATE -->
+<section id="certificate" class="hidden container">
+<div class="card certificate">
+<h1>LEARNPRO</h1>
+<h2>CERTIFICATE OF COMPLETION</h2>
+<p>This certificate is presented to</p>
+<h1 id="certName">Student Name</h1>
+<p>For completing the</p>
+<h2>Web Development Masterclass</h2>
+<p>Learn Today, Lead Tomorrow.</p>
+<p id="certId"></p>
+<p id="certDate"></p>
+</div>
+<button onclick="downloadPDF()">Download PDF Certificate</button>
+</section>
+
+<!-- ADMIN -->
+<section id="admin" class="hidden container">
+<h1>LearnPro Admin Dashboard</h1>
+<div class="grid">
+<div class="card"><h2 id="studentCount">0</h2><p>Students</p></div>
+<div class="card"><h2>₹999</h2><p>Course Price</p></div>
+<div class="card"><h2>7</h2><p>Lessons</p></div>
+</div>
+<div class="card">
+<h2>Registered Students</h2>
+<div id="adminStudents"></div>
+</div>
+<p>Demo admin view. Not secured for public deployment.</p>
+</section>
+
+<footer>
+<h2>LearnPro</h2>
+<p>Learn Today, Lead Tomorrow.</p>
+<p>© 2026 LearnPro Academy</p>
+</footer>
+
+<script>
+// DEMO STORAGE
+const getUsers=()=>JSON.parse(localStorage.getItem('lp_users')||'[]');
+const current=()=>JSON.parse(localStorage.getItem('lp_current')||'null');
+const progress=()=>JSON.parse(localStorage.getItem('lp_progress')||'[]');
+
+function show(id){
+document.querySelectorAll('body > section').forEach(s=>s.classList.add('hidden'));
+document.getElementById(id).classList.remove('hidden');
+if(id==='dashboard')updateDashboard();
+if(id==='lessons')renderLessons();
+if(id==='certificate')updateCertificate();
+if(id==='admin')updateAdmin();
+window.scrollTo(0,0);
+}
+
+// REGISTER
+function register(e){
+e.preventDefault();
+const name=document.getElementById('regName').value.trim();
+const email=document.getElementById('regEmail').value.trim().toLowerCase();
+const password=document.getElementById('regPass').value;
+const users=getUsers();
+
+if(users.some(u=>u.email===email)){
+document.getElementById('regMessage').textContent='Email already registered.';
+return;
+}
+
+users.push({name,email,password});
+localStorage.setItem('lp_users',JSON.stringify(users));
+alert('Registration successful! Please login.');
+show('login');
+}
+
+// LOGIN
+function login(e){
+e.preventDefault();
+const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+const password=document.getElementById('loginPass').value;
+const user=getUsers().find(u=>u.email===email&&u.password===password);
+
+if(!user){
+document.getElementById('loginMessage').textContent='Invalid login details.';
+return;
+}
+
+localStorage.setItem('lp_current',JSON.stringify(user));
+show('dashboard');
+}
+
+// LOGOUT
+function logout(){
+localStorage.removeItem('lp_current');
+show('home');
+}
+
+// DEMO PAYMENT
+function demoPayment(){
+if(!current()){show('login');return;}
+if(confirm('Demo only: simulate successful ₹999 enrollment?')){
+localStorage.setItem('lp_paid','true');
+updateDashboard();
+alert('Demo enrollment successful!');
+}
+}
+
+// COURSE
+const lessons=[
+'Introduction to Web Development',
+'HTML Fundamentals',
+'HTML Forms',
+'CSS Fundamentals',
+'Responsive Web Design',
+'JavaScript Basics',
+'JavaScript Projects'
+];
+
+function renderLessons(){
+const user=current();
+if(!user){show('login');return;}
+if(localStorage.getItem('lp_paid')!=='true'){
+alert('Please enroll in the course first.');
+show('dashboard');return;
+}
+
+const completed=progress();
+const list=document.getElementById('lessonList');
+list.innerHTML='';
+
+lessons.forEach((lesson,i)=>{
+const card=document.createElement('div');
+card.className='card';
+
+const title=document.createElement('h3');
+title.textContent=lesson;
+
+const status=document.createElement('p');
+status.textContent=completed.includes(i)?'✓ Completed':'Not completed';
+
+const btn=document.createElement('button');
+btn.textContent=completed.includes(i)?'Completed':'Mark Complete';
+btn.disabled=completed.includes(i);
+
+btn.onclick=()=>{
+const updated=progress();
+updated.push(i);
+localStorage.setItem('lp_progress',JSON.stringify(updated));
+renderLessons();
+};
+
+card.append(title,status,btn);
+list.appendChild(card);
+});
+}
+
+// DASHBOARD
+function updateDashboard(){
+const user=current();
+if(!user){show('login');return;}
+
+document.getElementById('welcome').textContent='Welcome, '+user.name;
+
+const paid=localStorage.getItem('lp_paid')==='true';
+document.getElementById('paymentStatus').textContent=paid?'✓ Course Purchased':'Course not purchased';
+document.getElementById('payBtn').style.display=paid?'none':'inline-block';
+
+const percentage=Math.round(progress().length/lessons.length*100);
+document.getElementById('progressBar').style.width=percentage+'%';
+document.getElementById('progressText').textContent=percentage+'% Completed';
+}
+
+// EXAM
+const questions=[
+{q:'What does HTML stand for?',a:['Hyper Text Markup Language','High Text Machine Language','Home Tool Markup Language'],correct:0},
+{q:'Which language styles a webpage?',a:['HTML','CSS','SQL'],correct:1},
+{q:'Which keyword declares a JavaScript variable?',a:['let','style','echo'],correct:0},
+{q:'Which tag creates a link?',a:['<link>','<a>','<p>'],correct:1},
+{q:'Which property changes text color?',a:['font-size','color','margin'],correct:1}
+];
+
+function renderExam(){
+const form=document.getElementById('examForm');
+form.innerHTML='';
+
+questions.forEach((q,i)=>{
+const card=document.createElement('div');
+card.className='card';
+
+const heading=document.createElement('h3');
+heading.textContent=(i+1)+'. '+q.q;
+card.appendChild(heading);
+
+q.a.forEach((answer,j)=>{
+const label=document.createElement('label');
+label.className='option';
+const radio=document.createElement('input');
+radio.type='radio';
+radio.name='q'+i;
+radio.value=j;
+radio.required=true;
+label.append(radio,document.createTextNode(' '+answer));
+card.appendChild(label);
+});
+form.appendChild(card);
+});
+
+const button=document.createElement('button');
+button.textContent='Submit Examination';
+form.appendChild(button);
+}
+
+function submitExam(e){
+e.preventDefault();
+const user=current();
+
+if(!user){show('login');return;}
+if(localStorage.getItem('lp_paid')!=='true'||progress().length!==lessons.length){
+alert('Purchase the course and complete all lessons first.');
+return;
+}
+
+let score=0;
+questions.forEach((q,i)=>{
+const selected=document.querySelector('input[name="q'+i+'"]:checked');
+if(selected&&Number(selected.value)===q.correct)score++;
+});
+
+const percentage=Math.round(score/questions.length*100);
+const passed=percentage>=70;
+
+localStorage.setItem('lp_exam_passed',passed?'true':'false');
+
+document.getElementById('examResult').textContent=
+'Your score: '+percentage+'%. '+(passed?'Congratulations! You passed.':'Please try again.');
+
+if(passed)alert('You passed! You can now generate your certificate.');
+}
+
+renderExam();
+
+// CERTIFICATE
+function updateCertificate(){
+const user=current();
+if(!user){show('login');return;}
+
+if(localStorage.getItem('lp_paid')!=='true'||
+progress().length!==lessons.length||
+localStorage.getItem('lp_exam_passed')!=='true'){
+alert('Complete the course and pass the exam first.');
+show('dashboard');return;
+}
+
+let id=localStorage.getItem('lp_cert_id');
+if(!id){
+id='LP-'+crypto.randomUUID().slice(0,12).toUpperCase();
+localStorage.setItem('lp_cert_id',id);
+}
+
+document.getElementById('certName').textContent=user.name;
+document.getElementById('certId').textContent='Certificate ID: '+id;
+document.getElementById('certDate').textContent='Issued: '+new Date().toLocaleDateString();
+}
+
+function downloadPDF(){
+if(typeof window.jspdf==='undefined'){
+alert('PDF library could not load. Check your internet connection.');
+return;
+}
+
+updateCertificate();
+
+const {jsPDF}=window.jspdf;
+const pdf=new jsPDF('landscape');
+
+pdf.setDrawColor(181,139,50);
+pdf.setLineWidth(4);
+pdf.rect(10,10,277,190);
+
+pdf.setTextColor(20,35,75);
+pdf.setFontSize(32);
+pdf.text('LEARNPRO',148,45,{align:'center'});
+
+pdf.setFontSize(23);
+pdf.text('CERTIFICATE OF COMPLETION',148,75,{align:'center'});
+
+pdf.setFontSize(16);
+pdf.text('This certificate is presented to',148,100,{align:'center'});
+
+pdf.setFontSize(27);
+pdf.text(current().name,148,125,{align:'center'});
+
+pdf.setFontSize(16);
+pdf.text('For completing Web Development Masterclass',148,145,{align:'center'});
+
+pdf.setFontSize(11);
+pdf.text('Certificate ID: '+localStorage.getItem('lp_cert_id'),148,170,{align:'center'});
+
+pdf.save('LearnPro-Certificate.pdf');
+}
+
+// ADMIN DEMO
+function updateAdmin(){
+const users=getUsers();
+document.getElementById('studentCount').textContent=users.length;
+const list=document.getElementById('adminStudents');
+list.innerHTML='';
+
+users.forEach(user=>{
+const p=document.createElement('p');
+p.textContent=user.name+' - '+user.email;
+list.appendChild(p);
+});
+}
+</script>
+
+</body>
+</html>
